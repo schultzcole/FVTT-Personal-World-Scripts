@@ -1,5 +1,6 @@
 /**
  * @author cole#9640
+ * @version 1
  * This script will change the default token configuration. It changes the following:
  *  - If the actor is a PC, show the name for all players. Otherwise, show it to the token's owner when hovered.
  *  - Always show all resource bars for owners of the token.
