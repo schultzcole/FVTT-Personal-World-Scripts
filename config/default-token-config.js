@@ -5,16 +5,28 @@
 // - Always show all resource bars for owners of the token
 // - Sets the first bar to display the token's hit points (dnd5e)
 Hooks.on("preCreateActor", (actorData, options, userId) => {
-  actorData.token = actorData.token ?? {};
+  mergeObject(actorData.token, createTokenData(actorData));
+});
+
+function createTokenData(actorData) {
+  const tokenData = actorData.token ?? {};
   
-  const displayBars = actorData.type === "character"
+  const display = actorData.type === "character"
     ? CONST.TOKEN_DISPLAY_MODES.OWNER
     : CONST.TOKEN_DISPLAY_MODES.OWNER_HOVER;
   
-  mergeObject(actorData.token, {
-    displayName: CONST.TOKEN_DISPLAY_MODES.OWNER_HOVER,
-    displayBars,
+  return {
+    displayName: display,
+    displayBars: display,
     bar1: { attribute: "attributes.hp" },
     bar2: { attribute: null },
-  });
-});
+  };
+}
+
+// This function can be called via macro to convert existing world actors to use the correct prototype
+// token settings. This will not affect tokens already placed in scenes.
+async function convertExistingActorPrototypeTokens() {
+  return game.actors.updateAll(a => ({ token: createTokenData(a.data) }));
+}
+
+globalThis.convertExistingActorPrototypeTokens = convertExistingActorPrototypeTokens;
